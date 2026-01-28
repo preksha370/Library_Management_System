@@ -2,7 +2,7 @@ import asyncHandler from "express-async-handler";
 import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
 
-// Generate JWT
+// Generate JWT 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET || "secret123", {
     expiresIn: "7d",

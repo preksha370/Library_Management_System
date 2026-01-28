@@ -15,7 +15,11 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 // Middleware
-app.use(cors({ origin: "*", methods: ["GET","POST","PUT","DELETE","OPTIONS"], allowedHeaders: ["Content-Type","Authorization"] }));
+app.use(cors({
+  origin: "*",
+  methods: ["GET","POST","PUT","DELETE","OPTIONS"],
+  allowedHeaders: ["Content-Type","Authorization"]
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -24,18 +28,20 @@ app.use("/api/books", bookRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/issued", issueBookRoutes);
 
-// Serve uploads
+// Serve uploads folder
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// Serve frontend
+// Serve frontend SPA
 const frontendPath = path.resolve(__dirname, "../../frontend");
 app.use(express.static(frontendPath));
 app.get(/^\/(?!api).*/, (req, res) => res.sendFile(path.join(frontendPath, "index.html")));
 
-// default API
+// Default API route
 app.get("/api", (req, res) => res.send("Library Management API is running!"));
 
-// handle non-existing API routes
-app.use("/api/*", (req, res) => res.status(404).json({ message: "API route not found" }));
+// Catch-all for non-existing API routes (fixed wildcard issue)
+app.use("/api", (req, res) => {
+  res.status(404).json({ message: "API route not found" });
+});
 
 export default app;
