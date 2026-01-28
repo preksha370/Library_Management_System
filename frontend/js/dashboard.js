@@ -16,7 +16,7 @@ const availableBooksEl = document.getElementById("availableBooks");
 
 const searchInput = document.getElementById("searchBookInput");
 
-// Updated BASE_URL to relative path
+// API base
 const BASE_URL = "/api";
 
 // Redirect unauthorized users
@@ -34,18 +34,24 @@ logoutBtn?.addEventListener("click", () => {
   window.location.href = "index.html";
 });
 
-// Authenticated fetch wrapper
+// Auth fetch helper
 async function authFetch(url, options = {}) {
-  const headers = { Authorization: `Bearer ${token}`, ...options.headers };
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    ...options.headers,
+  };
+
   const res = await fetch(url, { ...options, headers });
+
   if (!res.ok) {
-    const errData = await res.json().catch(() => ({}));
-    throw new Error(errData.message || "Request failed");
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || "Request failed");
   }
+
   return res.json();
 }
 
-// Load books and issued books
+// Load books
 async function loadBooks() {
   booksList.innerHTML = "";
   issuedBooksList.innerHTML = "";
@@ -56,7 +62,9 @@ async function loadBooks() {
 
     const issuedBookMap = new Map();
     userIssuedBooks.forEach(b => {
-      if (b.bookId?._id) issuedBookMap.set(b.bookId._id, b.dueAt || null);
+      if (b.bookId?._id) {
+        issuedBookMap.set(b.bookId._id, b.dueAt || null);
+      }
     });
 
     totalBooksEl.textContent = books.length;
@@ -74,11 +82,13 @@ async function loadBooks() {
       const card = document.createElement("div");
       card.className = "book-card";
 
+      // ✅ CLOUDINARY FIX
       const imageUrl = book.image
-        ? `${BASE_URL}${book.image}`
+        ? book.image
         : "https://via.placeholder.com/180x180?text=No+Image";
 
       const dueDate = issuedBookMap.get(book._id);
+
       card.innerHTML = `
         <img src="${imageUrl}" alt="Book Cover">
         <div class="book-card-content">
@@ -86,10 +96,15 @@ async function loadBooks() {
           <p><strong>Author:</strong> ${book.author}</p>
           <p><strong>Category:</strong> ${book.category || "-"}</p>
           <p><strong>ISBN:</strong> ${book.isbn || "-"}</p>
+
           ${
             isIssued
-              ? `<p><small>Due: ${dueDate ? new Date(dueDate).toLocaleDateString() : '-'}</small></p>
-                 <button class="return-btn" data-id="${book._id}">Return Book</button>`
+              ? `
+                <p><small>Due: ${
+                  dueDate ? new Date(dueDate).toLocaleDateString() : "-"
+                }</small></p>
+                <button class="return-btn" data-id="${book._id}">Return Book</button>
+              `
               : availableQty > 0
                 ? `<button class="issue-btn" data-id="${book._id}">Issue Book</button>`
                 : `<button disabled>Not Available</button>`
@@ -110,7 +125,7 @@ async function loadBooks() {
   }
 }
 
-// Issue/Return buttons
+// Issue / Return
 document.addEventListener("click", async (e) => {
   const bookId = e.target.dataset.id;
   if (!bookId) return;
@@ -119,8 +134,8 @@ document.addEventListener("click", async (e) => {
     if (e.target.classList.contains("issue-btn")) {
       if (!confirm("Do you want to issue this book?")) return;
 
-      const userIssuedBooks = await authFetch(`${BASE_URL}/issued/user`);
-      if (userIssuedBooks.length >= 2) {
+      const issued = await authFetch(`${BASE_URL}/issued/user`);
+      if (issued.length >= 2) {
         alert("You can issue a maximum of 2 books at a time.");
         return;
       }
@@ -152,11 +167,11 @@ document.addEventListener("click", async (e) => {
   }
 });
 
-// Initial load and auto-refresh every 10s
+// Initial load
 loadBooks();
 setInterval(loadBooks, 10000);
 
-// Search functionality
+// Search
 searchInput?.addEventListener("input", () => {
   const query = searchInput.value.toLowerCase();
   const activeTab = document.querySelector(".tab-content.active");
@@ -168,8 +183,10 @@ searchInput?.addEventListener("input", () => {
 
     if (originalText.toLowerCase().includes(query) && query !== "") {
       card.style.display = "flex";
-      const regex = new RegExp(`(${query})`, "gi");
-      titleEl.innerHTML = originalText.replace(regex, `<mark>$1</mark>`);
+      titleEl.innerHTML = originalText.replace(
+        new RegExp(`(${query})`, "gi"),
+        `<mark>$1</mark>`
+      );
     } else if (query === "") {
       card.style.display = "flex";
       titleEl.textContent = originalText;
