@@ -1,5 +1,5 @@
 // Base API URL
-const BASE_URL = "http://127.0.0.1:5000/api";
+const BASE_URL = "/api";
 
 // Elements
 const loginBtn = document.getElementById("loginBtn");

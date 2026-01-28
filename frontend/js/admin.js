@@ -1,5 +1,3 @@
-// Admin Dashboard JS
-
 const authData = JSON.parse(localStorage.getItem("user"));
 const user = authData?.user;
 const token = authData?.token;
@@ -18,26 +16,26 @@ const imageInput = document.getElementById("image");
 const bookTableBody = document.getElementById("bookTableBody");
 const formTitle = document.getElementById("formTitle");
 
-const BASE_URL = "http://127.0.0.1:5000";
+// use relative API URL
+const BASE_URL = "/api";
 
-// Authorization check
+// check authorization
 if (!authData || !user || !token || user.role !== "admin") {
   alert("Unauthorized access");
   window.location.href = "index.html";
 }
 adminName.textContent = user.name || user.email;
 
-// Logout
+// logout
 logoutBtn.addEventListener("click", () => {
   localStorage.removeItem("user");
   window.location.href = "index.html";
 });
 
-// Auth fetch helper
+// auth fetch helper
 async function authFetch(url, options = {}) {
   const headers = { Authorization: `Bearer ${token}` };
   if (!(options.body instanceof FormData)) headers["Content-Type"] = "application/json";
-
   const res = await fetch(url, { ...options, headers });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
@@ -46,7 +44,7 @@ async function authFetch(url, options = {}) {
   return res.json();
 }
 
-// Modal for issued users
+// modal for issued users
 const modal = document.createElement("div");
 modal.classList.add("modal");
 modal.innerHTML = `
@@ -68,24 +66,20 @@ modal.innerHTML = `
   </div>
 `;
 document.body.appendChild(modal);
-
 const modalClose = modal.querySelector(".close");
 const modalTableBody = modal.querySelector("tbody");
-
-// Close modal
 modalClose.addEventListener("click", () => modal.style.display = "none");
 window.addEventListener("click", (e) => { if (e.target === modal) modal.style.display = "none"; });
 
-// Load books
+// load books
 async function loadBooks() {
   bookTableBody.innerHTML = "";
   try {
-    const books = await authFetch(`${BASE_URL}/api/books`);
+    const books = await authFetch(`${BASE_URL}/books`);
     if (!books.length) {
       bookTableBody.innerHTML = `<tr><td colspan="8">No books found</td></tr>`;
       return;
     }
-
     books.forEach(book => {
       const imageUrl = book.image ? `${BASE_URL}${book.image}` : "https://via.placeholder.com/60x80?text=No+Image";
       const row = document.createElement("tr");
@@ -108,14 +102,12 @@ async function loadBooks() {
       `;
       bookTableBody.appendChild(row);
     });
-
   } catch (err) {
-    console.error(err);
     bookTableBody.innerHTML = `<tr><td colspan="8" style="color:red">Failed to load books: ${err.message}</td></tr>`;
   }
 }
 
-// Add / Update book
+// add/update book
 bookForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   try {
@@ -126,13 +118,10 @@ bookForm.addEventListener("submit", async (e) => {
     formData.append("category", categoryInput.value);
     formData.append("quantity", quantityInput.value);
     if (imageInput.files[0]) formData.append("image", imageInput.files[0]);
-
     const id = bookIdInput.value;
-    const url = id ? `${BASE_URL}/api/books/${id}` : `${BASE_URL}/api/books`;
+    const url = id ? `${BASE_URL}/books/${id}` : `${BASE_URL}/books`;
     const method = id ? "PUT" : "POST";
-
     await authFetch(url, { method, body: formData });
-
     bookForm.reset();
     bookIdInput.value = "";
     formTitle.textContent = "Add New Book";
@@ -142,15 +131,14 @@ bookForm.addEventListener("submit", async (e) => {
   }
 });
 
-// Edit / Delete book & show issued users
+// edit/delete books & issued users
 bookTableBody.addEventListener("click", async (e) => {
   const btn = e.target.closest("button, .issued-badge");
   if (!btn) return;
-
   const id = btn.dataset.id;
-  if (btn.classList.contains("editBtn")) { // Edit book
+  if (btn.classList.contains("editBtn")) {
     try {
-      const book = await authFetch(`${BASE_URL}/api/books/${id}`);
+      const book = await authFetch(`${BASE_URL}/books/${id}`);
       bookIdInput.value = book._id;
       titleInput.value = book.title;
       authorInput.value = book.author;
@@ -160,28 +148,24 @@ bookTableBody.addEventListener("click", async (e) => {
       formTitle.textContent = "Update Book";
     } catch (err) { alert("Failed to load book: " + err.message); }
   }
-
-  if (btn.classList.contains("deleteBtn")) { // Delete book
+  if (btn.classList.contains("deleteBtn")) {
     if (confirm("Delete this book?")) {
       try {
-        await authFetch(`${BASE_URL}/api/books/${id}`, { method: "DELETE" });
+        await authFetch(`${BASE_URL}/books/${id}`, { method: "DELETE" });
         loadBooks();
       } catch (err) { alert("Failed to delete book: " + err.message); }
     }
   }
-
-  if (btn.classList.contains("issued-badge")) { // Show issued users
+  if (btn.classList.contains("issued-badge")) {
     const bookId = btn.dataset.bookId;
     modalTableBody.innerHTML = `<tr><td colspan="5">Loading...</td></tr>`;
     modal.style.display = "block";
-
     try {
-      const issuedUsers = await authFetch(`${BASE_URL}/api/issued/book/${bookId}`);
+      const issuedUsers = await authFetch(`${BASE_URL}/issued/book/${bookId}`);
       if (!issuedUsers.length) {
         modalTableBody.innerHTML = `<tr><td colspan="5">No users have issued this book</td></tr>`;
         return;
       }
-
       modalTableBody.innerHTML = "";
       issuedUsers.forEach(ib => {
         const tr = document.createElement("tr");
@@ -200,5 +184,5 @@ bookTableBody.addEventListener("click", async (e) => {
   }
 });
 
-// Initial load
+// initial load
 loadBooks();

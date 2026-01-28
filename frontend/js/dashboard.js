@@ -1,3 +1,4 @@
+// Get auth data from localStorage
 const authData = JSON.parse(localStorage.getItem("user") || "{}");
 const user = authData?.user;
 const token = authData?.token;
@@ -15,8 +16,10 @@ const availableBooksEl = document.getElementById("availableBooks");
 
 const searchInput = document.getElementById("searchBookInput");
 
-const BASE_URL = "http://127.0.0.1:5000";
+// Updated BASE_URL to relative path
+const BASE_URL = "/api";
 
+// Redirect unauthorized users
 if (!authData || !token || !user || !user._id || user.role !== "member") {
   alert("Unauthorized access");
   window.location.href = "index.html";
@@ -25,11 +28,13 @@ if (!authData || !token || !user || !user._id || user.role !== "member") {
   dashboardUserName.textContent = user.name || user.email;
 }
 
+// Logout
 logoutBtn?.addEventListener("click", () => {
   localStorage.removeItem("user");
   window.location.href = "index.html";
 });
 
+// Authenticated fetch wrapper
 async function authFetch(url, options = {}) {
   const headers = { Authorization: `Bearer ${token}`, ...options.headers };
   const res = await fetch(url, { ...options, headers });
@@ -40,13 +45,14 @@ async function authFetch(url, options = {}) {
   return res.json();
 }
 
+// Load books and issued books
 async function loadBooks() {
   booksList.innerHTML = "";
   issuedBooksList.innerHTML = "";
 
   try {
-    const books = await authFetch(`${BASE_URL}/api/books`);
-    const userIssuedBooks = await authFetch(`${BASE_URL}/api/issued/user`);
+    const books = await authFetch(`${BASE_URL}/books`);
+    const userIssuedBooks = await authFetch(`${BASE_URL}/issued/user`);
 
     const issuedBookMap = new Map();
     userIssuedBooks.forEach(b => {
@@ -104,6 +110,7 @@ async function loadBooks() {
   }
 }
 
+// Issue/Return buttons
 document.addEventListener("click", async (e) => {
   const bookId = e.target.dataset.id;
   if (!bookId) return;
@@ -112,13 +119,13 @@ document.addEventListener("click", async (e) => {
     if (e.target.classList.contains("issue-btn")) {
       if (!confirm("Do you want to issue this book?")) return;
 
-      const userIssuedBooks = await authFetch(`${BASE_URL}/api/issued/user`);
+      const userIssuedBooks = await authFetch(`${BASE_URL}/issued/user`);
       if (userIssuedBooks.length >= 2) {
         alert("You can issue a maximum of 2 books at a time.");
         return;
       }
 
-      const result = await authFetch(`${BASE_URL}/api/issued/issue`, {
+      const result = await authFetch(`${BASE_URL}/issued/issue`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ bookId }),
@@ -131,7 +138,7 @@ document.addEventListener("click", async (e) => {
     if (e.target.classList.contains("return-btn")) {
       if (!confirm("Do you want to return this book?")) return;
 
-      const result = await authFetch(`${BASE_URL}/api/issued/return`, {
+      const result = await authFetch(`${BASE_URL}/issued/return`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ bookId }),
@@ -145,9 +152,11 @@ document.addEventListener("click", async (e) => {
   }
 });
 
+// Initial load and auto-refresh every 10s
 loadBooks();
 setInterval(loadBooks, 10000);
 
+// Search functionality
 searchInput?.addEventListener("input", () => {
   const query = searchInput.value.toLowerCase();
   const activeTab = document.querySelector(".tab-content.active");
