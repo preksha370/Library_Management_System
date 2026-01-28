@@ -1,4 +1,4 @@
-const authData = JSON.parse(localStorage.getItem("user"));
+const authData = JSON.parse(localStorage.getItem("user") || "{}");
 const user = authData?.user;
 const token = authData?.token;
 
@@ -12,6 +12,8 @@ const issuedBooksList = document.getElementById("issuedBooksList");
 const totalBooksEl = document.getElementById("totalBooks");
 const issuedBooksEl = document.getElementById("issuedBooks");
 const availableBooksEl = document.getElementById("availableBooks");
+
+const searchInput = document.getElementById("searchBookInput");
 
 const BASE_URL = "http://127.0.0.1:5000";
 
@@ -48,9 +50,7 @@ async function loadBooks() {
 
     const issuedBookMap = new Map();
     userIssuedBooks.forEach(b => {
-      if (b.bookId && b.bookId._id) {
-        issuedBookMap.set(b.bookId._id, b.dueAt || null);
-      }
+      if (b.bookId?._id) issuedBookMap.set(b.bookId._id, b.dueAt || null);
     });
 
     totalBooksEl.textContent = books.length;
@@ -59,11 +59,10 @@ async function loadBooks() {
     let availableCount = 0;
 
     books.forEach(book => {
-      if (!book || !book._id) return;
+      if (!book?._id) return;
 
       const isIssued = issuedBookMap.has(book._id);
       const availableQty = book.availableQuantity ?? 0;
-
       if (!isIssued && availableQty > 0) availableCount++;
 
       const card = document.createElement("div");
@@ -73,6 +72,7 @@ async function loadBooks() {
         ? `${BASE_URL}${book.image}`
         : "https://via.placeholder.com/180x180?text=No+Image";
 
+      const dueDate = issuedBookMap.get(book._id);
       card.innerHTML = `
         <img src="${imageUrl}" alt="Book Cover">
         <div class="book-card-content">
@@ -82,9 +82,7 @@ async function loadBooks() {
           <p><strong>ISBN:</strong> ${book.isbn || "-"}</p>
           ${
             isIssued
-              ? `<p><small>Due: ${new Date(
-                  issuedBookMap.get(book._id)
-                ).toLocaleDateString()}</small></p>
+              ? `<p><small>Due: ${dueDate ? new Date(dueDate).toLocaleDateString() : '-'}</small></p>
                  <button class="return-btn" data-id="${book._id}">Return Book</button>`
               : availableQty > 0
                 ? `<button class="issue-btn" data-id="${book._id}">Issue Book</button>`
@@ -111,11 +109,9 @@ document.addEventListener("click", async (e) => {
   if (!bookId) return;
 
   try {
-    // ------------- ISSUE BOOK -------------
     if (e.target.classList.contains("issue-btn")) {
       if (!confirm("Do you want to issue this book?")) return;
 
-      // Check current issued books count
       const userIssuedBooks = await authFetch(`${BASE_URL}/api/issued/user`);
       if (userIssuedBooks.length >= 2) {
         alert("You can issue a maximum of 2 books at a time.");
@@ -125,21 +121,20 @@ document.addEventListener("click", async (e) => {
       const result = await authFetch(`${BASE_URL}/api/issued/issue`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bookId })
+        body: JSON.stringify({ bookId }),
       });
 
       alert(result.message);
       loadBooks();
     }
 
-    // ------------- RETURN BOOK -------------
     if (e.target.classList.contains("return-btn")) {
       if (!confirm("Do you want to return this book?")) return;
 
       const result = await authFetch(`${BASE_URL}/api/issued/return`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bookId })
+        body: JSON.stringify({ bookId }),
       });
 
       alert(result.message);
@@ -153,32 +148,25 @@ document.addEventListener("click", async (e) => {
 loadBooks();
 setInterval(loadBooks, 10000);
 
-// ----------- SEARCH FUNCTIONALITY (ACTIVE TAB ONLY + HIGHLIGHT) -------------
-const searchInput = document.getElementById("searchBookInput");
-
-searchInput.addEventListener("input", () => {
+searchInput?.addEventListener("input", () => {
   const query = searchInput.value.toLowerCase();
-
   const activeTab = document.querySelector(".tab-content.active");
   if (!activeTab) return;
 
-  const allBooks = activeTab.querySelectorAll(".book-card");
-
-  allBooks.forEach(card => {
+  activeTab.querySelectorAll(".book-card").forEach(card => {
     const titleEl = card.querySelector("h3");
-    const titleText = titleEl.textContent;
-    const lowerTitle = titleText.toLowerCase();
+    const originalText = titleEl.textContent.replace(/<mark>|<\/mark>/gi, "");
 
-    if (lowerTitle.includes(query) && query !== "") {
+    if (originalText.toLowerCase().includes(query) && query !== "") {
       card.style.display = "flex";
       const regex = new RegExp(`(${query})`, "gi");
-      titleEl.innerHTML = titleText.replace(regex, `<mark>$1</mark>`);
+      titleEl.innerHTML = originalText.replace(regex, `<mark>$1</mark>`);
     } else if (query === "") {
       card.style.display = "flex";
-      titleEl.textContent = titleText;
+      titleEl.textContent = originalText;
     } else {
       card.style.display = "none";
-      titleEl.textContent = titleText; 
+      titleEl.textContent = originalText;
     }
   });
 });

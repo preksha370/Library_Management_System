@@ -4,9 +4,7 @@ import asyncHandler from "express-async-handler";
 
 // GET all books (Admin + Member)
 export const getBooks = asyncHandler(async (req, res) => {
-  if (!req.user) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
+  if (!req.user) return res.status(401).json({ message: "Unauthorized" });
 
   const isAdmin = req.user.role === "admin";
   const now = new Date();
@@ -27,7 +25,6 @@ export const getBooks = asyncHandler(async (req, res) => {
         returned: true,
       });
 
-      // Overdue count (Admin only)
       const overdueCount = await IssuedBook.countDocuments({
         bookId: book._id,
         returned: false,
@@ -38,17 +35,14 @@ export const getBooks = asyncHandler(async (req, res) => {
         return {
           ...book,
           quantity,
-          issuedCount,    
+          issuedCount,
           returnedCount,
-          overdueCount,    
+          overdueCount,
         };
       }
 
-      // Member view
       return {
         ...book,
-        quantity,
-        issuedCount,
         availableQuantity: Math.max(quantity - issuedCount, 0),
       };
     })
@@ -59,25 +53,20 @@ export const getBooks = asyncHandler(async (req, res) => {
 
 // GET single book by ID
 export const getBookById = asyncHandler(async (req, res) => {
-  if (!req.user) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
+  if (!req.user) return res.status(401).json({ message: "Unauthorized" });
 
   const book = await Book.findById(req.params.id).lean();
   if (!book) return res.status(404).json({ message: "Book not found" });
 
   const now = new Date();
-
   const issuedCount = await IssuedBook.countDocuments({
     bookId: book._id,
     returned: false,
   });
-
   const returnedCount = await IssuedBook.countDocuments({
     bookId: book._id,
     returned: true,
   });
-
   const overdueCount = await IssuedBook.countDocuments({
     bookId: book._id,
     returned: false,
@@ -91,31 +80,38 @@ export const getBookById = asyncHandler(async (req, res) => {
       ...book,
       issuedCount,
       returnedCount,
-      overdueCount, 
+      overdueCount,
     });
   }
 
   res.json({
     ...book,
-    issuedCount,
     availableQuantity: Math.max((book.quantity ?? 0) - issuedCount, 0),
   });
 });
 
 // CREATE book (Admin only)
 export const createBook = asyncHandler(async (req, res) => {
-  if (!req.user || req.user.role !== "admin") {
+  if (!req.user || req.user.role !== "admin")
     return res.status(403).json({ message: "Admin access only" });
-  }
 
   const { title, author, isbn, quantity, category } = req.body;
-  if (!title || !author || quantity === undefined || !category) {
+  if (!title || !author || quantity === undefined || !category)
     return res.status(400).json({ message: "Missing required fields" });
-  }
 
-  const image = req.file ? `/uploads/${req.file.filename}` : undefined;
+  if (isNaN(quantity) || quantity < 0)
+    return res.status(400).json({ message: "Quantity must be a non-negative number" });
 
-  const book = new Book({ title, author, isbn, quantity, category, image });
+  const image = req.file ? `/uploads/${req.file.filename}` : "/uploads/default-book.png";
+
+  const book = new Book({
+    title: title.trim(),
+    author: author.trim(),
+    isbn: isbn?.trim(),
+    quantity,
+    category: category.trim(),
+    image,
+  });
   await book.save();
 
   res.status(201).json(book);
@@ -123,32 +119,33 @@ export const createBook = asyncHandler(async (req, res) => {
 
 // UPDATE book (Admin only)
 export const updateBook = asyncHandler(async (req, res) => {
-  if (!req.user || req.user.role !== "admin") {
+  if (!req.user || req.user.role !== "admin")
     return res.status(403).json({ message: "Admin access only" });
-  }
 
   const book = await Book.findById(req.params.id);
   if (!book) return res.status(404).json({ message: "Book not found" });
 
   const { title, author, isbn, quantity, category } = req.body;
 
-  if (title !== undefined) book.title = title;
-  if (author !== undefined) book.author = author;
-  if (isbn !== undefined) book.isbn = isbn;
-  if (quantity !== undefined) book.quantity = quantity;
-  if (category !== undefined) book.category = category;
+  if (title !== undefined) book.title = title.trim();
+  if (author !== undefined) book.author = author.trim();
+  if (isbn !== undefined) book.isbn = isbn.trim();
+  if (quantity !== undefined) {
+    if (isNaN(quantity) || quantity < 0)
+      return res.status(400).json({ message: "Quantity must be a non-negative number" });
+    book.quantity = quantity;
+  }
+  if (category !== undefined) book.category = category.trim();
   if (req.file) book.image = `/uploads/${req.file.filename}`;
 
   await book.save();
   res.json(book);
 });
 
-
 // DELETE book (Admin only)
 export const deleteBook = asyncHandler(async (req, res) => {
-  if (!req.user || req.user.role !== "admin") {
+  if (!req.user || req.user.role !== "admin")
     return res.status(403).json({ message: "Admin access only" });
-  }
 
   const book = await Book.findById(req.params.id);
   if (!book) return res.status(404).json({ message: "Book not found" });

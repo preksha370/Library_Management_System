@@ -17,7 +17,13 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 // Middleware
-app.use(cors({ origin: "*" }));
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -29,10 +35,10 @@ app.use("/api/issued", issueBookRoutes);
 // Serve uploads folder
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// Serve frontend folder (adjusted path)
+// Serve frontend folder
 app.use(express.static(path.join(__dirname, "../../frontend")));
 
-// SPA fallback for any non-API route
+// SPA fallback (non-API routes)
 app.get(/^\/(?!api).*/, (req, res) => {
   res.sendFile(path.join(__dirname, "../../frontend/index.html"));
 });

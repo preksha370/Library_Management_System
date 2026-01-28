@@ -4,6 +4,12 @@ import User from "../models/userModel.js";
 
 // Protect routes
 export const protect = asyncHandler(async (req, res, next) => {
+
+  // ✅ IMPORTANT: allow CORS preflight requests
+  if (req.method === "OPTIONS") {
+    return next();
+  }
+
   let token;
 
   if (
