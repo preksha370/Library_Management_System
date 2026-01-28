@@ -1,0 +1,374 @@
+/* =========================
+   GENERAL STYLES
+========================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background: #f0f4ff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  background: #1e3a8a;
+  color: white;
+  padding: 15px 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+header h2 {
+  font-size: 26px;
+  font-weight: 600;
+}
+
+header nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+header nav span {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+header nav button {
+  padding: 8px 18px;
+  border: 2px solid #ffffff;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #1e3a8a;
+  color: white;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+header nav button:hover {
+  background: #2f54eb;
+  border-color: #ffffff;
+}
+
+.dashboard-header {
+  background: linear-gradient(135deg, #1e3a8a, #2f54eb);
+  color: white;
+  padding: 10px 50px;
+  border-radius: 20px;
+  margin: 20px 50px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-header h1 {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.dashboard-header p {
+  font-size: 18px;
+  opacity: 0.9;
+}
+
+.main-content {
+  display: flex;
+  gap: 30px;
+  margin: 0 50px 50px 50px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.book-form-section {
+  flex: 1 1 350px;
+  max-width: 350px;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 20px;
+  border: 2px solid #1e3a8a;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 510px;
+}
+
+.book-form-section h3 {
+  margin-bottom: 15px;
+  font-size: 22px;
+  color: #1e3a8a;
+  font-weight: 600;
+  border-bottom: 2px solid #dbe1f0;
+  padding-bottom: 8px;
+}
+
+#bookForm {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+#bookForm input[type="text"],
+#bookForm input[type="number"],
+#bookForm input[type="file"] {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #cfd3e2;
+  background: #f8f9ff;
+  font-size: 14px;
+}
+
+#bookForm button {
+  width: 70%;
+  padding: 14px 28px;
+  border-radius: 12px;
+  background: #1e3a8a;
+  color: white;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+#bookForm button:hover {
+  background: #2f54eb;
+}
+
+.book-list-section {
+  flex: 2 1 650px;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 20px;
+  border: 2px solid #1e3a8a;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 510px;
+}
+
+.book-list-section h3 {
+  margin-bottom: 15px;
+  font-size: 22px;
+  color: #1e3a8a;
+  font-weight: 600;
+  border-bottom: 2px solid #dbe1f0;
+  padding-bottom: 8px;
+}
+
+.table-wrapper {
+  overflow-y: auto;
+  flex: 1 1 auto;
+}
+
+.book-list-section table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  border: 1px solid #cfd3e2;
+}
+
+.book-list-section th,
+.book-list-section td {
+  padding: 12px 10px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 14px;
+  border: 1px solid #cfd3e2;
+}
+
+.book-list-section th {
+  background: #1e3a8a;
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.book-list-section tr:nth-child(even) {
+  background: #f6f8fc;
+}
+
+.book-list-section tr:hover {
+  background: #e8f0fe;
+}
+
+.book-list-section td img {
+  width: 60px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.editBtn {
+  background: #56ccf2;
+  color: white;
+  border-radius: 8px;
+  padding: 6px 12px;
+}
+
+.editBtn:hover {
+  background: #2d9cdb;
+}
+
+.deleteBtn {
+  background: #ff6b6b;
+  color: white;
+  border-radius: 8px;
+  padding: 6px 12px;
+}
+
+.deleteBtn:hover {
+  background: #e63946;
+}
+
+.no-books-row td {
+  text-align: center;
+  font-style: italic;
+  color: #555;
+  padding: 25px 0;
+}
+
+footer {
+  background: #1e3a8a;
+  color: white;
+  text-align: center;
+  padding: 15px;
+  margin-top: auto;
+}
+
+/* =========================
+   ISSUED BADGE
+========================= */
+.issued-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  background: #ffffff;
+  color: #1e3a8a;
+  font-weight: bold;
+  font-size: 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.issued-badge:hover::after {
+  content: "Click to view users";
+  display: block;
+  font-size: 12px;
+  color: #555;
+  margin-top: 4px;
+}
+
+/* =========================
+   MODAL STYLING
+========================= */
+.modal {
+  display: none; /* hidden by default */
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: 60px auto;
+  padding: 20px 30px;
+  border-radius: 12px;
+  width: 80%;
+  max-width: 700px;
+  max-height: 70%;
+  overflow-y: auto;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  position: relative; 
+  border: 4px solid #1e3a8a;
+}
+
+/* Modal header flex for title + close button */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.modal-header h3 {
+  color: #1e3a8a;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.modal-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.modal-content th,
+.modal-content td {
+  padding: 12px 10px;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+.modal-content th {
+  background-color: #1e3a8a;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Red circular close button on top-right corner */
+.modal-content .close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: #ef4444;
+  border: 2px solid #000000;
+  color: white;
+  width: 28px;
+  height: 28px;
+  text-align: center;
+  line-height: 28px;
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.modal-content .close:hover {
+  background: #dc2626;
+}
+
+.modal-content tbody tr:nth-child(even) {
+  background-color: #f6f8fc;
+}
+
+.modal-content tbody tr:hover {
+  background-color: #e8f0fe;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modal-content {
+    width: 95%;
+    padding: 15px 20px;
+  }
+
+  .modal-content th,
+  .modal-content td {
+    font-size: 13px;
+    padding: 8px 6px;
+  }
+}

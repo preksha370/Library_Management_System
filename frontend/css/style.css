@@ -1,0 +1,195 @@
+/* RESET & GLOBAL STYLES */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: #eaf0ff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* HEADER */
+header {
+    background: #1e3a8a;
+    color: white;
+    padding: 15px 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+header h2 {
+    font-size: 26px;
+    font-weight: 600;
+}
+
+/* HERO SECTION */
+.dashboard-hero {
+    background: linear-gradient(135deg, #1e3a8a, #2f54eb);
+    color: white;
+    text-align: center;
+    padding: 10px 50px;
+    margin: 20px 50px 40px 50px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.dashboard-hero h1 {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.dashboard-hero p {
+    font-size: 18px;
+    opacity: 0.9;
+}
+
+/* AUTH FORM / LOGIN & REGISTER */
+.auth-card {
+    background: #ffffff;
+    max-width: 450px;
+    margin: 10px auto;
+    padding: 30px;
+    border-radius: 20px;
+    border: 2px solid #1e3a8a;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* REGISTER form fixed height */
+section.auth-card.register {
+    height: 420px;
+    min-height: 420px;
+    max-height: 420px;
+    padding: 20px;
+    gap: 12px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.form-toggle {
+    display: flex;
+    gap: 10px;
+}
+
+.form-toggle button {
+    flex: 1;
+    padding: 10px 0;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    background: #f0f4ff;
+    color: #1e3a8a;
+    transition: 0.2s;
+}
+
+.form-toggle button.active {
+    background: #1e3a8a;
+    color: white;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+form label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+form input[type="text"],
+form input[type="email"],
+form input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #cfd3e2;
+    background: #f8f9ff;
+}
+
+/* ROLE FIELD: LABEL + RADIOS ON SAME LINE */
+#roleField {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+#roleField .role-label {
+    font-weight: 500;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+#roleField .role-options {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+#roleField .role-options label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+}
+
+/* SUBMIT BUTTON */
+form button[type="submit"] {
+    padding: 12px;
+    border-radius: 12px;
+    background: #1e3a8a;
+    color: white;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: 0.3s;
+}
+
+form button[type="submit"]:hover {
+    background: #2f54eb;
+}
+
+#formMessage {
+    margin-top: 10px;
+    text-align: center;
+    color: red;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* FOOTER */
+footer {
+    background: #1e3a8a;
+    color: white;
+    text-align: center;
+    padding: 15px;
+    margin-top: auto;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    header { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .auth-card { padding: 25px; }
+}
+
+@media (max-width: 480px) {
+    .dashboard-hero h1 { font-size: 22px; }
+    .dashboard-hero p { font-size: 14px; }
+    .auth-card { margin: 20px; padding: 20px; }
+}

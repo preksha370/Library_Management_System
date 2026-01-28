@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard | MyLibrary</title>
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <h2>MyLibrary Admin</h2>
+    <nav>
+      <span id="adminName">Admin</span>
+      <button id="logoutBtn">Logout</button>
+    </nav>
+  </header>
+
+  <!-- DASHBOARD HEADER -->
+  <section class="dashboard-header">
+    <h1>Admin Dashboard</h1>
+    <p>Manage books, inventory, and library resources</p>
+  </section>
+
+  <!-- MAIN CONTENT -->
+  <section class="main-content">
+
+    <!-- ADD / EDIT BOOK FORM -->
+    <div class="book-form-section">
+      <h3 id="formTitle">Add New Book</h3>
+
+      <form id="bookForm">
+        <!-- REQUIRED FOR EDIT -->
+        <input type="hidden" id="bookId" />
+
+        <input type="text" id="title" placeholder="Book Title" required />
+        <input type="text" id="author" placeholder="Author Name" required />
+        <input type="text" id="isbn" placeholder="ISBN Number" />
+        <input type="text" id="category" placeholder="Category" required />
+        <input type="number" id="quantity" placeholder="Quantity" min="1" />
+        <input type="file" id="image" accept="image/*" />
+
+        <button type="submit">Save Book</button>
+      </form>
+    </div>
+
+    <!-- BOOK LIST TABLE -->
+    <div class="book-list-section">
+      <h3>Books Inventory</h3>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Title</th>
+              <th>Author</th>
+              <th>Category</th>
+              <th>ISBN</th>
+              <th>Quantity</th>
+              <th>Issued</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+
+          <tbody id="bookTableBody">
+            <tr class="no-books-row">
+              <td colspan="8">No books available</td>
+            </tr>
+          </tbody>
+
+        </table>
+      </div>
+    </div>
+
+    <!-- ISSUED USERS MODAL -->
+    <div id="issuedUsersModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Issued Users</h3>
+          <span class="close">&times;</span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>User Name</th>
+              <th>Email</th>
+              <th>Issued At</th>
+              <th>Due At</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="issuedUsersTableBody">
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>&copy; 2026 MyLibrary. All rights reserved.</p>
+  </footer>
+
+  <script src="js/admin.js"></script>
+</body>
+</html>

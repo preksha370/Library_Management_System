@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Member Dashboard | MyLibrary</title>
+  <link rel="stylesheet" href="css/user.css">
+</head>
+
+<body>
+<header>
+  <h2>📚 MyLibrary</h2>
+  <nav>
+    <span id="headerUserName">Member</span>
+    <button id="logoutBtn">Logout</button>
+  </nav>
+</header>
+
+<main>
+  <section class="dashboard-hero">
+    <h1>Welcome, <span id="dashboardUserName">Member</span></h1>
+    <p>Browse, issue, and return books easily</p>
+  </section>
+
+  <section class="dashboard-widgets">
+    <div class="widget">
+      <h3>Total Books</h3>
+      <p id="totalBooks">0</p>
+    </div>
+    <div class="widget">
+      <h3>Issued Books</h3>
+      <p id="issuedBooks">0</p>
+    </div>
+    <div class="widget">
+      <h3>Available Books</h3>
+      <p id="availableBooks">0</p>
+    </div>
+  </section>
+
+  <section class="search-bar">
+    <input type="text" id="searchBookInput" placeholder="Search book by name">
+  </section>
+
+  <section class="tabs">
+    <button class="tab-btn active" data-target="available">Available Books</button>
+    <button class="tab-btn" data-target="issued">My Issued Books</button>
+  </section>
+
+  <section class="tab-content active" id="available">
+    <div class="books-grid" id="booksList"></div>
+  </section>
+
+  <section class="tab-content" id="issued">
+    <div class="books-grid" id="issuedBooksList"></div>
+  </section>
+</main>
+
+<footer>
+  <p>&copy; 2026 MyLibrary. All rights reserved.</p>
+</footer>
+
+<script src="js/dashboard.js"></script>
+<script>
+  const tabs = document.querySelectorAll(".tab-btn");
+  const contents = document.querySelectorAll(".tab-content");
+
+  tabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      tabs.forEach(t => t.classList.remove("active"));
+      tab.classList.add("active");
+
+      const target = tab.dataset.target;
+      contents.forEach(c =>
+        c.id === target ? c.classList.add("active") : c.classList.remove("active")
+      );
+    });
+  });
+</script>
+</body>
+</html>
